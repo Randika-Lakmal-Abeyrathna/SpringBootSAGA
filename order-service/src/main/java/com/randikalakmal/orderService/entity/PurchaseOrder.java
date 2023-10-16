@@ -8,9 +8,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "PURCHASE_ORDER_TBL")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class PurchaseOrder {
 
     @Id
@@ -23,6 +20,18 @@ public class PurchaseOrder {
     private OrderStatus orderStatus;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    public PurchaseOrder(Integer id, Integer userId, Integer productId, Integer price, OrderStatus orderStatus, PaymentStatus paymentStatus) {
+        this.id = id;
+        this.userId = userId;
+        this.productId = productId;
+        this.price = price;
+        this.orderStatus = orderStatus;
+        this.paymentStatus = paymentStatus;
+    }
+
+    public PurchaseOrder() {
+    }
 
     public void setUserId(Integer userId) {
         this.userId = userId;
