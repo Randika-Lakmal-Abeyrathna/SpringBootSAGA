@@ -4,15 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class OrderRequestDto {
 
     private Integer userId;
     private Integer productId;
     private Integer amount;
     private Integer orderId;
+
+    public OrderRequestDto(Integer userId, Integer productId, Integer amount, Integer orderId) {
+        this.userId = userId;
+        this.productId = productId;
+        this.amount = amount;
+        this.orderId = orderId;
+    }
+
+    public OrderRequestDto() {
+    }
 
     public Integer getProductId() {
         return productId;
