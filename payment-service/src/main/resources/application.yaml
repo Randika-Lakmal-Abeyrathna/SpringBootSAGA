@@ -1,8 +1,8 @@
 spring:
   cloud:
+    function:
+      definition: paymentProcessor
     stream:
-      function:
-        definition: paymentProcessor
       bindings:
         paymentProcessor-in-0:
           destination: order-event

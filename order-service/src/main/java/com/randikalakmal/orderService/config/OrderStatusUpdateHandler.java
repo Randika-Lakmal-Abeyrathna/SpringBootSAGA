@@ -6,6 +6,7 @@ import com.randikalakmal.commondtos.event.PaymentStatus;
 import com.randikalakmal.orderService.entity.PurchaseOrder;
 import com.randikalakmal.orderService.repository.OrderRepository;
 import com.randikalakmal.orderService.service.OrderStatusPublisher;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,6 +22,7 @@ public class OrderStatusUpdateHandler {
     private OrderStatusPublisher orderStatusPublisher;
 
 
+    @Transactional
     public void updateOrder(int id, Consumer<PurchaseOrder> consumer){
          orderRepository.findById(id).ifPresent(consumer.andThen(this::updateOrder));
     }
