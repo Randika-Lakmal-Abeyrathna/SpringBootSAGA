@@ -12,6 +12,7 @@ import com.randikalakmal.paymentService.repository.UserTransactionRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +41,7 @@ public class PaymentService {
     }
 
 
+    @Transactional
     public PaymentEvent newOrderEvent(OrderEvent orderEvent) {
         /**
          *
@@ -56,6 +58,7 @@ public class PaymentService {
                 .filter(userBalance -> userBalance.getPrice() >orderRequestDto.getAmount())
                 .map( userBalance -> {
                         userBalance.setPrice(userBalance.getPrice() - orderRequestDto.getAmount());
+                        userBalanceRepository.save(userBalance);
                         userTransactionRepository.save(new UserTransaction(orderRequestDto.getOrderId(),orderRequestDto.getUserId(),orderRequestDto.getAmount()));
                         return new PaymentEvent(paymentRequestDto,PaymentStatus.PAYMENT_COMPLETED);
                         }
@@ -63,12 +66,17 @@ public class PaymentService {
 
     }
 
+    @Transactional
     public void cancelOrderEvent(OrderEvent orderEvent) {
         userTransactionRepository.findById(orderEvent.getOrderRequestDto().getOrderId())
                 .ifPresent(userTransaction -> {
                     userTransactionRepository.delete(userTransaction);
-                    userTransactionRepository.findById(userTransaction.getUserId())
-                            .ifPresent(ub -> ub.setAmount(ub.getAmount() + userTransaction.getAmount()) );
+                    // refund the amount back to the user's balance
+                    userBalanceRepository.findById(userTransaction.getUserId())
+                            .ifPresent(ub -> {
+                                ub.setPrice(ub.getPrice() + userTransaction.getAmount());
+                                userBalanceRepository.save(ub);
+                            });
                 });
     }
 }
